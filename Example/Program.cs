@@ -43,6 +43,8 @@ namespace asz
                             di = Directory.CreateDirectory(tmpdirpath);
             
                             //download zip
+
+                            Util.downloadFile(localConfig["updateserver"] + remoteConfig["filetodownload"], "");
                                     //TODO
                             //extract
                                     //TODO

@@ -25,6 +25,11 @@ namespace asz
             return AppDomain.CurrentDomain.BaseDirectory;
         }
 
+        public static void downloadFile(string fileUrl , string targetDir)
+        {      
+            WebClient webClient = new WebClient();
+            webClient.DownloadFile(fileUrl, targetDir);
+        }
 
         public static void writeLocalConfig(string fileName, Dictionary<string, string> newLocalConfig)
         {
@@ -49,8 +54,11 @@ namespace asz
             System.IO.StreamReader file = new System.IO.StreamReader(fileName);
             while ((line = file.ReadLine()) != null)
             {
-                string[] part = line.Split('*');
-                localConfig.Add(part[0], part[1]);
+                if(line.Length>0){
+                     string[] part = line.Split('*');
+                     if(part.Length==2)   
+                         localConfig.Add(part[0], part[1]);
+                }
             }
             file.Close();
             return localConfig;
