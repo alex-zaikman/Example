@@ -16,33 +16,44 @@ namespace asz
         [STAThread]
         static void Main()
         {
-            //get local config
-            string localConfigPath = Util.getCurrentPath() + "config.asz";
-            Dictionary<string, string> localConfig = Util.readLocalConfig(localConfigPath);
-            //get remote config
-            Dictionary<string, string> remoteConfig = Util.readRemoteConfig(localConfig["updateserver"]+"/config.asz");
-            if(Convert.ToInt32(localConfig["versionnum"])< Convert.ToInt32(remoteConfig["versionnum"])){
-                //ask user to update
-                DialogResult res = Util.raiseYesNo("new vertion founs","new vertion of CGS found\nplease update");
-                switch (res)
+            try
+            {
+                //get local config
+                string localConfigPath = Util.getCurrentPath() + "config.asz";
+                Dictionary<string, string> localConfig = Util.readLocalConfig(localConfigPath);
+                //get remote config
+                Dictionary<string, string> remoteConfig = Util.readRemoteConfig(localConfig["updateserver"] + "/config.asz");
+                if (Convert.ToInt32(localConfig["versionnum"]) < Convert.ToInt32(remoteConfig["versionnum"]))
                 {
-                    case DialogResult.Yes:
-                               Application.EnableVisualStyles();
-                              Application.SetCompatibleTextRenderingDefault(false);
-                                Application.Run(new CGS());
+                    //ask user to update
+                    DialogResult res = Util.raiseYesNo("new vertion founs", "new vertion of CGS found\nplease update");
+                    switch (res)
+                    {
+                        case DialogResult.Yes:
+                            Application.EnableVisualStyles();
+                            Application.SetCompatibleTextRenderingDefault(false);
+                            Application.Run(new CGS());
 
                             break;
-                    case DialogResult.No:
-                    default:
-                        break;
+                        case DialogResult.No:
+                        default:
+                            break;
+
+                    }
+
 
                 }
 
-                
             }
+            catch (Exception e)
+            {
 
-            //run cef proccess
-            Process.Start("cgsclient.exe");
+            }
+            finally
+            {
+                //run cef proccess
+                Process.Start("cgsclient.exe");
+            }
 
         }
     }
