@@ -2,7 +2,10 @@
 using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
-
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Diagnostics;
 namespace asz
 {
     public partial class CGS : Form
@@ -21,9 +24,39 @@ namespace asz
 
         public void DoWork()
         {
-            //TODO
+            //get local config
+            string localConfigPath = Util.getCurrentPath() + "config.asz";
+            Dictionary<string, string> localConfig = Util.readLocalConfig(localConfigPath);
+            //get remote config
+            Dictionary<string, string> remoteConfig = Util.readRemoteConfig(localConfig["updateserver"] + "/config.asz");
 
-          //  Util.raiseOK("ds", "sd");
+            //create tmp dir
+            DirectoryInfo di = null;
+            string tmpdirpath = Util.getCurrentPath() + "~update";
+
+            if (Directory.Exists(tmpdirpath))
+            {
+                Directory.Delete(tmpdirpath, true);
+            }
+            di = Directory.CreateDirectory(tmpdirpath);
+
+            //download zip
+            string zipFilePath = tmpdirpath + "\\" + remoteConfig["filetodownload"].TrimEnd('\r', '\n');
+            Util.downloadFile(localConfig["updateserver"].TrimEnd('\r', '\n', '/') + "/" + remoteConfig["filetodownload"].TrimEnd('\r', '\n'),
+             zipFilePath);
+            //extract
+            Util.unzip(zipFilePath, tmpdirpath);
+            File.Delete(zipFilePath);
+
+            Util.CopyFolder(tmpdirpath, Util.getCurrentPath());
+            //write new local config
+            localConfig["versionnum"] = remoteConfig["versionnum"];
+            localConfig["versionname"] = remoteConfig["versionname"];
+            Util.writeLocalConfig(localConfigPath, localConfig);
+            //del dir
+            di.Delete(true);
+                           
+
             
         }
 
