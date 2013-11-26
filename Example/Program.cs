@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
+using System.Diagnostics;
 
 
 namespace asz
@@ -29,8 +30,7 @@ namespace asz
                             //start progress indicator
                             Application.EnableVisualStyles();
                             Application.SetCompatibleTextRenderingDefault(false);
-                            Application.Run(new CGS());
-                       
+                            Application.Run(new CGS());       
                             //create tmp dir
                             DirectoryInfo di = null;
                             string tmpdirpath = Util.getCurrentPath() + "~update";
@@ -39,29 +39,35 @@ namespace asz
                             {
                                 Directory.Delete(tmpdirpath,true);   
                             }
-
                             di = Directory.CreateDirectory(tmpdirpath);
             
                             //download zip
-
-                            Util.downloadFile(localConfig["updateserver"] + remoteConfig["filetodownload"], "");
-                                    //TODO
+                            string zipFilePath = tmpdirpath + "\\" + remoteConfig["filetodownload"].TrimEnd('\r', '\n');
+                            Util.downloadFile(localConfig["updateserver"].TrimEnd( '\r', '\n' ,'/') +"/"+remoteConfig["filetodownload"].TrimEnd( '\r', '\n' ), 
+                             zipFilePath );
                             //extract
-                                    //TODO
+                            Util.unzip(zipFilePath, tmpdirpath);
+                            File.Delete(zipFilePath);
+
+                            Util.CopyFolder(tmpdirpath,Util.getCurrentPath());
                             //write new local config
                             localConfig["versionnum"]= remoteConfig["versionnum"];
                             localConfig["versionname"]= remoteConfig["versionname"];
                             Util.writeLocalConfig(localConfigPath,localConfig);
                             //del dir
                             di.Delete(true);
-                            //run cef proccess
-                                 //TODO
+                           
+
+
                             break;
                     case DialogResult.No:
                     default:
                         break;
 
                 }
+
+                 //run cef proccess
+                Process.Start("cgsclient.exe");
             }
 
         

@@ -26,9 +26,11 @@ namespace asz
         }
 
         public static void downloadFile(string fileUrl , string targetDir)
-        {      
-            WebClient webClient = new WebClient();
-            webClient.DownloadFile(fileUrl, targetDir);
+        {
+            using (WebClient webClient = new WebClient())
+            {
+                webClient.DownloadFile(fileUrl, targetDir);
+            }
         }
 
         public static void writeLocalConfig(string fileName, Dictionary<string, string> newLocalConfig)
@@ -92,6 +94,7 @@ namespace asz
         public static void unzip(string zipPath, string extractPath)
         {
             ZipFile.ExtractToDirectory(zipPath, extractPath);
+
         }
 
         public static DialogResult raiseYesNo(string title, string msg)
@@ -113,6 +116,25 @@ namespace asz
             return result;
         }
 
+        public static void CopyFolder(string sourceFolder, string destFolder)
+        {
+            if (!Directory.Exists(destFolder))
+                Directory.CreateDirectory(destFolder);
 
+            string[] files = Directory.GetFiles(sourceFolder);
+            foreach (string file in files)
+            {
+                string name = Path.GetFileName(file);
+                string dest = Path.Combine(destFolder, name);
+                File.Copy(file, dest,true);
+            }
+            string[] folders = Directory.GetDirectories(sourceFolder);
+            foreach (string folder in folders)
+            {
+                string name = Path.GetFileName(folder);
+                string dest = Path.Combine(destFolder, name);
+                CopyFolder(folder, dest);
+            }
+        }
     }
 }
